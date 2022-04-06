@@ -15,6 +15,8 @@ data class UserEntity(
     val username: String,
     val email: String,
     var quote: String?
-)
+) {
+    constructor(name: String, username: String, email: String) : this(0, name, username, email, null)
+}
 
 fun UserEntity.toDto() = UserDto(id, name, username, email, quote)

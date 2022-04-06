@@ -39,4 +39,8 @@ class UserRepositorySpringDataImpl(private val userRepo: UserEntitySpringDataRep
             PageRequest.of(page, size, Sort.by("id"))
         ).toList()
     }
+
+    override fun deleteAll() {
+        userRepo.deleteAll()
+    }
 }

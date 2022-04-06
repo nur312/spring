@@ -26,6 +26,8 @@ import ru.fintech.spring.task6.dto.UserDto
 import ru.fintech.spring.task6.dto.toEntity
 import ru.fintech.spring.task6.entity.UserEntity
 import ru.fintech.spring.task6.repo.Repo
+import ru.fintech.spring.task6.repo.UserRepositoryJdbcImpl
+import ru.fintech.spring.task6.repo.UserRepositorySpringDataImpl
 import ru.fintech.spring.task6.service.UserService
 
 
@@ -35,7 +37,9 @@ import ru.fintech.spring.task6.service.UserService
 class Task6ApplicationTests(
     private val mockMvc: MockMvc,
     private val objectMapper: ObjectMapper,
-    repo: Repo<UserEntity, Long>
+    repo: Repo<UserEntity, Long>,
+    jdbcRepo: UserRepositoryJdbcImpl,
+    springDataRepo: UserRepositorySpringDataImpl
 ) : FeatureSpec() {
 
     private val quoteMock = mockk<RandomQuoteClient>()
@@ -49,6 +53,121 @@ class Task6ApplicationTests(
     }
 
     init {
+        feature("spring jdbc repo") {
+            val messi = UserEntity("Messi", "mes", "mes@mes.sp")
+
+            scenario("add") {
+                messi.id = jdbcRepo.save(messi).id
+
+                messi.id shouldNotBe 0L
+            }
+
+            scenario("count") {
+                val count = jdbcRepo.count()
+
+                count shouldBe 1
+            }
+
+            scenario("get") {
+                val read = jdbcRepo.findByIdOrNull(messi.id)
+
+                requireNotNull(read)
+
+                read should {
+                    it.id shouldBe messi.id
+                    it.name shouldBe messi.name
+                    it.username shouldBe messi.username
+                    it.email shouldBe messi.email
+                    it.quote shouldBe null
+                }
+            }
+
+            for (dto in initialUsers) {
+                jdbcRepo.save(dto.toEntity())
+            }
+
+            scenario("find #1") {
+                val expected = listOf(
+                    UserDto("James", "james", "James@mail.com"),
+                    UserDto("John", "john", "Nohn@mail.com"),
+                )
+
+                val result = jdbcRepo.findAll(0, 2, "J", "j", null).map { UserDto(it.name, it.username, it.email) }
+
+                result shouldBe expected
+            }
+
+            scenario("find #2") {
+                val expected = listOf(
+                    UserDto("Jennifer", "jennifer", "Jennifer@mail.com"),
+                )
+
+                val result = jdbcRepo.findAll(1, 2, "J", "j", null)
+                    .map { UserDto(it.name, it.username, it.email) }
+
+                result shouldBe expected
+            }
+
+            jdbcRepo.deleteAll()
+        }
+        feature("spring data repo") {
+            val messi = UserEntity("Messi", "mes", "mes@mes.sp")
+
+            scenario("add") {
+                messi.id = springDataRepo.save(messi).id
+
+                messi.id shouldNotBe 0L
+            }
+
+            scenario("count") {
+                val count = springDataRepo.count()
+
+                count shouldBe 1
+            }
+
+            scenario("get") {
+                val read = springDataRepo.findByIdOrNull(messi.id)
+
+                requireNotNull(read)
+
+                read should {
+                    it.id shouldBe messi.id
+                    it.name shouldBe messi.name
+                    it.username shouldBe messi.username
+                    it.email shouldBe messi.email
+                    it.quote shouldBe null
+                }
+            }
+
+            for (dto in initialUsers) {
+                springDataRepo.save(dto.toEntity())
+            }
+
+            scenario("find #1") {
+                val expected = listOf(
+                    UserDto("James", "james", "James@mail.com"),
+                    UserDto("John", "john", "Nohn@mail.com"),
+                )
+
+                val result =
+                    springDataRepo.findAll(0, 2, "J", "j", null).map { UserDto(it.name, it.username, it.email) }
+
+                result shouldBe expected
+            }
+
+            scenario("find #2") {
+                val expected = listOf(
+                    UserDto("Jennifer", "jennifer", "Jennifer@mail.com"),
+                )
+
+                val result = springDataRepo.findAll(1, 2, "J", "j", null)
+                    .map { UserDto(it.name, it.username, it.email) }
+
+                result shouldBe expected
+            }
+
+            springDataRepo.deleteAll()
+        }
         feature("service") {
 
 

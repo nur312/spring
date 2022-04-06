@@ -82,4 +82,8 @@ class UserRepositoryJdbcImpl(private val jdbcTemplate: JdbcTemplate) : Repo<User
             )
         }
     }
+
+    override fun deleteAll() {
+        jdbcTemplate.update("delete user_entity_jdbc")
+    }
 }

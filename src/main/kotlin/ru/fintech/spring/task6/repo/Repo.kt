@@ -6,6 +6,8 @@ interface Repo<E, PK> {
     fun findByIdOrNull(id: PK): E?
     fun count(): Int
     fun findAll(
-        page: Int, size: Int, name: String?, username: String?, email: String?
+        page: Int, size: Int, name: String? = null, username: String? = null, email: String? = null
     ): List<E>
+
+    fun deleteAll()
 }
