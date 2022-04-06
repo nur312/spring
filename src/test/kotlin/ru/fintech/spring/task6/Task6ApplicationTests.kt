@@ -26,14 +26,17 @@ import ru.fintech.spring.task6.dto.UserDto
 import ru.fintech.spring.task6.dto.toEntity
 import ru.fintech.spring.task6.entity.UserEntity
 import ru.fintech.spring.task6.repo.Repo
-import ru.fintech.spring.task6.repo.UserRepoImpl
 import ru.fintech.spring.task6.service.UserService
 
 
 @Suppress("LeakingThis")
 @SpringBootTest
 @AutoConfigureMockMvc
-class Task6ApplicationTests(private val mockMvc: MockMvc, private val objectMapper: ObjectMapper) : FeatureSpec() {
+class Task6ApplicationTests(
+    private val mockMvc: MockMvc,
+    private val objectMapper: ObjectMapper,
+    repo: Repo<UserEntity, Long>
+) : FeatureSpec() {
 
     private val quoteMock = mockk<RandomQuoteClient>()
 
@@ -47,9 +50,9 @@ class Task6ApplicationTests(private val mockMvc: MockMvc, private val objectMapp
 
     init {
         feature("service") {
-            val userRepo: Repo<UserEntity, Long> = UserRepoImpl()
 
-            val userService = UserService(userRepo, quoteMock)
+
+            val userService = UserService(quoteMock, repo)
 
             scenario("add users and working with the client") {
                 for (dto in initialUsers) {
@@ -106,9 +109,11 @@ class Task6ApplicationTests(private val mockMvc: MockMvc, private val objectMapp
             scenario("find #2") {
                 val expected = listOf(
                     UserDto("Jennifer", "jennifer", "Jennifer@mail.com"),
+                    UserDto("James", "james", "James@mail.com"),
                 )
 
-                val result = find(1, 2, "J", "j").map { UserDto(it.name, it.username, it.email) }
+                val result = find(1, 2, "J", "j")
+                    .map { UserDto(it.name, it.username, it.email) }
 
                 result shouldBe expected
             }
