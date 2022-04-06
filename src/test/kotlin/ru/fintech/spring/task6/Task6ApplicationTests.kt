@@ -46,6 +46,68 @@ class Task6ApplicationTests(private val mockMvc: MockMvc, private val objectMapp
     }
 
     init {
+        feature("spring jdbc repo") {
+            val userRepo: Repo<UserEntity, Long> = UserRepoImpl()
+            val messi = UserEntity(0, "Messi", "mes", "mes@mes.sp", null)
+
+            scenario("add") {
+                messi.id = userRepo.save(messi).id
+
+                messi.id shouldNotBe 0L
+            }
+
+            scenario("count") {
+                val count = userRepo.count()
+
+                count shouldBe 1
+            }
+
+            scenario("get") {
+                val read = userRepo.findById(messi.id)
+
+                requireNotNull(read)
+
+                read should {
+                    it.id shouldBe messi.id
+                    it.name shouldBe messi.name
+                    it.username shouldBe messi.username
+                    it.email shouldBe messi.email
+                    it.quote shouldBe null
+                }
+            }
+
+            for (dto in initialUsers) {
+                userRepo.save(dto.toEntity())
+            }
+
+            scenario("find #1") {
+                val expected = listOf(
+                    UserDto("James", "james", "James@mail.com"),
+                    UserDto("John", "john", "Nohn@mail.com"),
+                )
+                val filter: (UserEntity) -> (Boolean) = {
+                    (it.name.startsWith("J")) &&
+                            (it.username.startsWith("j"))
+                }
+                val result = userRepo.findAll(filter, 0, 2).map { UserDto(it.name, it.username, it.email) }
+
+                result shouldBe expected
+            }
+
+            scenario("find #2") {
+                val expected = listOf(
+                    UserDto("Jennifer", "jennifer", "Jennifer@mail.com"),
+                )
+                val filter: (UserEntity) -> (Boolean) = {
+                    (it.name.startsWith("J")) &&
+                            (it.username.startsWith("j"))
+                }
+                val result = userRepo.findAll(filter, 1, 2)
+                    .map { UserDto(it.name, it.username, it.email) }
+
+                result shouldBe expected
+            }
+        }
         feature("service") {
             val userRepo: Repo<UserEntity, Long> = UserRepoImpl()
 
