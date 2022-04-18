@@ -4,17 +4,15 @@ import org.springframework.context.annotation.Primary
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.jdbc.support.KeyHolder
-import org.springframework.stereotype.Repository
+import org.springframework.stereotype.Component
 import ru.fintech.spring.task6.entity.User
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.Statement
 import java.sql.Types
 
-// По условии нужно было так сделать
-// "В итоговом приложении инжектить любой из из них(пометить один из них с помощью @Primary)"
 @Primary
-@Repository
+@Component
 class UserDao(private val jdbcTemplate: JdbcTemplate) : Repo<User, Long> {
 
 
