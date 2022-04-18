@@ -4,25 +4,24 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
-import ru.fintech.spring.task6.entity.UserEntity
+import ru.fintech.spring.task6.entity.User
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 @Repository
-class UserRepositorySpringDataImpl(private val userRepo: UserEntitySpringDataRepository) : Repo<UserEntity, Long> {
-    override fun save(entity: UserEntity): UserEntity {
-        entity.id = userRepo.save(entity).id
-        return entity
+class UserRepository(private val userRepo: UserRepositoryJpa) : Repo<User, Long> {
+    override fun save(entity: User): User {
+        return userRepo.save(entity)
     }
 
-    override fun findByIdOrNull(id: Long): UserEntity? = userRepo.findByIdOrNull(id)
+    override fun findByIdOrNull(id: Long): User? = userRepo.findByIdOrNull(id)
 
     override fun count(): Int = userRepo.count().toInt()
 
-    override fun findAll(page: Int, size: Int, name: String?, username: String?, email: String?): List<UserEntity> {
+    override fun findAll(page: Int, size: Int, name: String?, username: String?, email: String?): List<User> {
         return userRepo.findAll(
-            { root: Root<UserEntity>, _, criteriaBuilder: CriteriaBuilder ->
+            { root: Root<User>, _, criteriaBuilder: CriteriaBuilder ->
                 val predicates: MutableList<Predicate> = ArrayList()
                 if (name != null) {
                     predicates.add(criteriaBuilder.like(root.get("name"), "$name%"))

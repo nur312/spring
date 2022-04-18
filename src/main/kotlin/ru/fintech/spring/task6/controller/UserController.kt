@@ -3,7 +3,7 @@ package ru.fintech.spring.task6.controller
 import org.springframework.web.bind.annotation.*
 import ru.fintech.spring.task6.dto.UserDto
 import ru.fintech.spring.task6.dto.toEntity
-import ru.fintech.spring.task6.entity.UserEntity
+import ru.fintech.spring.task6.entity.User
 import ru.fintech.spring.task6.entity.toDto
 import ru.fintech.spring.task6.service.UserService
 
@@ -40,7 +40,7 @@ class UserController(private val userService: UserService) {
             name = name,
             username = username,
             email = email
-        ).map(UserEntity::toDto)
+        ).map(User::toDto)
     }
 
     companion object {

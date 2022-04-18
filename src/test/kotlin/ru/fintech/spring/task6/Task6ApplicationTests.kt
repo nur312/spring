@@ -24,10 +24,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import ru.fintech.spring.task6.client.RandomQuoteClient
 import ru.fintech.spring.task6.dto.UserDto
 import ru.fintech.spring.task6.dto.toEntity
-import ru.fintech.spring.task6.entity.UserEntity
+import ru.fintech.spring.task6.entity.User
 import ru.fintech.spring.task6.repo.Repo
-import ru.fintech.spring.task6.repo.UserRepositoryJdbcImpl
-import ru.fintech.spring.task6.repo.UserRepositorySpringDataImpl
+import ru.fintech.spring.task6.repo.UserDao
+import ru.fintech.spring.task6.repo.UserRepository
 import ru.fintech.spring.task6.service.UserService
 
 
@@ -37,9 +37,9 @@ import ru.fintech.spring.task6.service.UserService
 class Task6ApplicationTests(
     private val mockMvc: MockMvc,
     private val objectMapper: ObjectMapper,
-    repo: Repo<UserEntity, Long>,
-    jdbcRepo: UserRepositoryJdbcImpl,
-    springDataRepo: UserRepositorySpringDataImpl
+    repo: Repo<User, Long>,
+    jdbcRepo: UserDao,
+    springDataRepo: UserRepository
 ) : FeatureSpec() {
 
     private val quoteMock = mockk<RandomQuoteClient>()
@@ -54,7 +54,7 @@ class Task6ApplicationTests(
 
     init {
         feature("spring jdbc repo") {
-            val messi = UserEntity("Messi", "mes", "mes@mes.sp")
+            val messi = User("Messi", "mes", "mes@mes.sp")
 
             scenario("add") {
                 messi.id = jdbcRepo.save(messi).id
@@ -111,7 +111,7 @@ class Task6ApplicationTests(
             jdbcRepo.deleteAll()
         }
         feature("spring data repo") {
-            val messi = UserEntity("Messi", "mes", "mes@mes.sp")
+            val messi = User("Messi", "mes", "mes@mes.sp")
 
             scenario("add") {
                 messi.id = springDataRepo.save(messi).id

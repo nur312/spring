@@ -7,7 +7,7 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 
 @Entity
-data class UserEntity(
+data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long,
@@ -19,4 +19,4 @@ data class UserEntity(
     constructor(name: String, username: String, email: String) : this(0, name, username, email, null)
 }
 
-fun UserEntity.toDto() = UserDto(id, name, username, email, quote)
+fun User.toDto() = UserDto(id, name, username, email, quote)
